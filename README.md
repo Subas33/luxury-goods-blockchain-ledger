@@ -4,6 +4,7 @@
 
 A blockchain-based asset provenance tracking, combining immutable on-chain state with privacy-preserving off-chain document storage.
 
+![alt text](docs/images/UI.png)
 ---
 
 ## 📋 Table of Contents
