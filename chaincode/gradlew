@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+set -eu
+
+BASE_DIR="$(
+  CDPATH= cd -- "$(dirname -- "$0")" && pwd
+)"
+PROJECT_ROOT="$(
+  CDPATH= cd -- "$BASE_DIR/.." && pwd
+)"
+DIST_NAME="${CHAINCODE_DIST_NAME:-luxuryasset}"
+DIST_DIR="$BASE_DIR/build/install/$DIST_NAME"
+
+if [ "$#" -eq 0 ]; then
+  echo "No Gradle task provided." >&2
+  exit 1
+fi
+
+supports_install_dist=false
+for arg in "$@"; do
+  if [ "$arg" = "installDist" ]; then
+    supports_install_dist=true
+    break
+  fi
+done
+
+if [ "$supports_install_dist" != "true" ]; then
+  echo "This compatibility wrapper only supports the installDist task." >&2
+  exit 1
+fi
+
+"$PROJECT_ROOT/mvnw" -f "$PROJECT_ROOT/pom.xml" -pl chaincode -am package
+
+rm -rf "$DIST_DIR"
+mkdir -p "$DIST_DIR/bin" "$DIST_DIR/lib"
+
+cp "$BASE_DIR/target/chaincode.jar" "$DIST_DIR/lib/chaincode.jar"
+
+cat > "$DIST_DIR/bin/$DIST_NAME" <<'EOF'
+#!/usr/bin/env sh
+set -eu
+
+APP_HOME="$(
+  CDPATH= cd -- "$(dirname -- "$0")/.." && pwd
+)"
+
+exec java ${JAVA_OPTS:-} -jar "$APP_HOME/lib/chaincode.jar" "$@"
+EOF
+
+chmod +x "$DIST_DIR/bin/$DIST_NAME"

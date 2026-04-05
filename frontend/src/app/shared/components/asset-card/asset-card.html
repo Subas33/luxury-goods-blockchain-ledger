@@ -1,0 +1,40 @@
+<article class="asset-card" [routerLink]="['/assets', asset().assetId]">
+  <div class="asset-card__glow"></div>
+
+  <div class="asset-card__eyebrow">
+    <span>{{ titleCase(asset().type) }}</span>
+    <span class="status-pill" [attr.data-tone]="statusTone()">{{ statusLabel() }}</span>
+  </div>
+
+  <div class="asset-card__body">
+    <div>
+      <p class="asset-card__brand">{{ asset().brand }}</p>
+      <h3>{{ displayName() }}</h3>
+      <p class="asset-card__owner">Held by {{ asset().owner }}</p>
+    </div>
+
+    <dl class="asset-card__facts">
+      <div>
+        <dt>Estimated boutique value</dt>
+        <dd>{{ valueLabel() }}</dd>
+      </div>
+      <div>
+        <dt>Ledger badge</dt>
+        <dd>{{ blockchainLabel() }}</dd>
+      </div>
+      <div>
+        <dt>Inspection trail</dt>
+        <dd>{{ asset().inspectionCount }} reports</dd>
+      </div>
+      <div>
+        <dt>Latest hash</dt>
+        <dd>{{ hashLabel() }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <footer class="asset-card__footer">
+    <span>{{ asset().assetId }}</span>
+    <span>Open dossier</span>
+  </footer>
+</article>

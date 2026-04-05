@@ -1,0 +1,242 @@
+@if (loading()) {
+  <section class="detail-state">
+    <h1>Opening asset dossier</h1>
+    <p>Loading the latest projection, on-chain history, and stored inspection reports.</p>
+  </section>
+} @else if (error()) {
+  <section class="detail-state">
+    <h1>Unable to open dossier</h1>
+    <p>{{ error() }}</p>
+    <a class="button button--primary" routerLink="/">Return to collection</a>
+  </section>
+} @else if (asset(); as asset) {
+  <section class="detail-page">
+    <a class="back-link" routerLink="/">&lt; Back to collection</a>
+
+    <section class="detail-hero">
+      <div class="detail-hero__copy">
+        <p class="section-kicker">{{ titleCase(asset.type) }} dossier</p>
+        <h1>{{ assetTitle() }}</h1>
+        <p class="detail-hero__lede">
+          Presented for premium resale with a linked custody trail, inspection archive, and ledger-backed authenticity
+          narrative.
+        </p>
+
+        <div class="hero-tags">
+          <span>{{ asset.assetId }}</span>
+          <span>{{ currentStatus() }}</span>
+          <span>{{ asset.owner }}</span>
+        </div>
+      </div>
+
+      <aside class="detail-hero__panel">
+        <div>
+          <span>Estimated boutique value</span>
+          <strong>{{ assetValue() }}</strong>
+        </div>
+        <div>
+          <span>Latest inspection hash</span>
+          <strong>{{ hashPreview(asset.latestInspectionHash) }}</strong>
+        </div>
+        <div>
+          <span>Attestations</span>
+          <strong>{{ asset.inspectionCount }}</strong>
+        </div>
+      </aside>
+    </section>
+
+    @if (actionMessage()) {
+      <p class="action-banner">{{ actionMessage() }}</p>
+    }
+
+    <section class="detail-grid">
+      <article class="panel">
+        <div class="panel__heading">
+          <div>
+            <p class="section-kicker">Current storefront projection</p>
+            <h2>Asset profile</h2>
+          </div>
+          <span class="status-pill" [attr.data-tone]="currentTone()">{{ currentStatus() }}</span>
+        </div>
+
+        <dl class="fact-grid">
+          <div>
+            <dt>Brand</dt>
+            <dd>{{ asset.brand }}</dd>
+          </div>
+          <div>
+            <dt>Current owner</dt>
+            <dd>{{ asset.owner }}</dd>
+          </div>
+          <div>
+            <dt>Created</dt>
+            <dd>{{ asset.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div>
+            <dt>Last updated</dt>
+            <dd>{{ asset.updatedAt | date: 'medium' }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="panel">
+        <div class="panel__heading">
+          <div>
+            <p class="section-kicker">Demo actions</p>
+            <h2>Ownership and inspection updates</h2>
+          </div>
+        </div>
+
+        <div class="action-stack">
+          <form [formGroup]="transferForm" (ngSubmit)="submitTransfer()" class="action-form">
+            <h3>Transfer ownership</h3>
+            <label>
+              <span>New owner</span>
+              <input formControlName="newOwner" placeholder="Private Client Desk" />
+            </label>
+            <button class="button button--primary" type="submit" [disabled]="transfering()">
+              {{ transfering() ? 'Transferring...' : 'Commit Transfer' }}
+            </button>
+          </form>
+
+          <form [formGroup]="inspectionForm" (ngSubmit)="submitInspection()" class="action-form">
+            <h3>Record inspection</h3>
+            <label>
+              <span>Inspector</span>
+              <input formControlName="inspector" />
+            </label>
+
+            <div class="field-row">
+              <label>
+                <span>Status</span>
+                <select formControlName="status">
+                  <option value="PASSED">Passed</option>
+                  <option value="FLAGGED">Flagged</option>
+                  <option value="PENDING">Pending</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Inspection time</span>
+                <input type="datetime-local" formControlName="inspectedAt" />
+              </label>
+            </div>
+
+            <label>
+              <span>Location</span>
+              <input formControlName="location" />
+            </label>
+
+            <label>
+              <span>Inspection notes</span>
+              <textarea formControlName="notes" rows="4"></textarea>
+            </label>
+
+            <div class="field-row">
+              <label>
+                <span>Serial match</span>
+                <input formControlName="serialMatch" />
+              </label>
+              <label>
+                <span>Condition</span>
+                <input formControlName="condition" />
+              </label>
+            </div>
+
+            <label>
+              <span>Specialist</span>
+              <input formControlName="specialist" />
+            </label>
+
+            <button class="button button--primary" type="submit" [disabled]="recordingInspection()">
+              {{ recordingInspection() ? 'Hashing report...' : 'Store Report and Hash On-Chain' }}
+            </button>
+          </form>
+        </div>
+      </article>
+    </section>
+
+    <section class="detail-grid detail-grid--lower">
+      <article class="panel">
+        <div class="panel__heading">
+          <div>
+            <p class="section-kicker">Blockchain provenance</p>
+            <h2>Ledger timeline</h2>
+          </div>
+        </div>
+
+        <div class="timeline">
+          @for (entry of timeline(); track entry.transactionId) {
+            <article class="timeline__entry">
+              <div class="timeline__marker"></div>
+              <div>
+                <h3>{{ entry.headline }}</h3>
+                <p>{{ entry.subline }}</p>
+                <div class="timeline__meta">
+                  <span>{{ entry.timestamp | date: 'medium' }}</span>
+                  <span>{{ entry.transactionId.slice(0, 18) }}...</span>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel__heading">
+          <div>
+            <p class="section-kicker">Off-chain inspection archive</p>
+            <h2>Inspection reports</h2>
+          </div>
+        </div>
+
+        @if (!inspections().length) {
+          <p class="empty-copy">No inspection dossiers are stored yet for this asset.</p>
+        } @else {
+          <div class="inspection-list">
+            @for (inspection of inspections(); track inspection.id) {
+              <article class="inspection-card">
+                <div class="inspection-card__header">
+                  <div>
+                    <h3>{{ inspection.inspector }}</h3>
+                    <p>{{ inspection.location }}</p>
+                  </div>
+                  <span class="status-pill" [attr.data-tone]="inspectionTone(inspection.status)">
+                    {{ inspectionLabel(inspection.status) }}
+                  </span>
+                </div>
+
+                <p class="inspection-card__notes">{{ inspection.notes }}</p>
+
+                <dl class="inspection-card__facts">
+                  <div>
+                    <dt>Inspected at</dt>
+                    <dd>{{ inspection.inspectedAt | date: 'medium' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Stored in Mongo</dt>
+                    <dd>{{ inspection.storedAt | date: 'medium' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Ledger sync</dt>
+                    <dd>{{ inspection.ledgerSynced ? 'Confirmed' : 'Pending' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Hash preview</dt>
+                    <dd>{{ hashPreview(inspection.reportHash) }}</dd>
+                  </div>
+                </dl>
+
+                <div class="inspection-card__metadata">
+                  @for (item of inspection.metadata | keyvalue; track item.key) {
+                    <span>{{ item.key }}: {{ item.value }}</span>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </article>
+    </section>
+  </section>
+}

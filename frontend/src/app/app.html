@@ -1,0 +1,29 @@
+<div class="app-shell">
+  <header class="site-header">
+    <a class="brand-lockup" routerLink="/">
+      <span class="brand-mark">LG</span>
+      <span class="brand-copy">
+        <strong>Luxury Goods House</strong>
+        <span>Blockchain-authenticated commerce</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <a routerLink="/" fragment="catalog" routerLinkActive="active">Collection</a>
+      <a routerLink="/" fragment="operations" routerLinkActive="active">Operations</a>
+      <a routerLink="/" fragment="trust" routerLinkActive="active">Why Fabric</a>
+    </nav>
+  </header>
+
+  <main class="page-frame">
+    <router-outlet />
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Luxury Goods House</strong>
+      <p>Luxury ecommerce demo with Hyperledger Fabric provenance, Spring Boot orchestration, and MongoDB off-chain records.</p>
+    </div>
+    <p>Run the UI on `http://localhost:4200` and the middleware on `http://localhost:8080`.</p>
+  </footer>
+</div>

@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+.vscode/
+**/.gradle/
+**/build/
+**/out/
+**/target/
+**/*.log
+.fabric/
+.mvn/wrapper/dists/
+.mvn/wrapper/tmp/
+frontend/.npm-cache/

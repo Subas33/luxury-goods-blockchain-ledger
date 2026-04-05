@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: luxury-goods-middleware
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/luxury_goods}
+
+fabric:
+  msp-id: ${FABRIC_MSP_ID:Org1MSP}
+  channel: ${FABRIC_CHANNEL:mychannel}
+  chaincode-name: ${FABRIC_CHAINCODE_NAME:luxuryasset}
+  peer-endpoint: ${FABRIC_PEER_ENDPOINT:localhost:7051}
+  peer-host-alias: ${FABRIC_PEER_HOST_ALIAS:peer0.org1.example.com}
+  evaluate-timeout: ${FABRIC_EVALUATE_TIMEOUT:5s}
+  endorse-timeout: ${FABRIC_ENDORSE_TIMEOUT:15s}
+  submit-timeout: ${FABRIC_SUBMIT_TIMEOUT:5s}
+  commit-status-timeout: ${FABRIC_COMMIT_STATUS_TIMEOUT:60s}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

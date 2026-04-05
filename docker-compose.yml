@@ -1,0 +1,15 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: luxury-goods-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: luxury_goods
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+

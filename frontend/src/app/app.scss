@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  backdrop-filter: blur(18px);
+  background:
+    linear-gradient(135deg, rgba(14, 21, 27, 0.92), rgba(22, 35, 46, 0.78)),
+    rgba(10, 14, 18, 0.6);
+  border-bottom: 1px solid rgba(215, 181, 107, 0.18);
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  border-radius: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--color-ink);
+  background: linear-gradient(135deg, var(--color-gold), var(--color-champagne));
+  box-shadow: 0 14px 32px rgba(182, 142, 68, 0.28);
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.brand-copy strong {
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brand-copy span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.site-nav {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.site-nav a {
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: var(--color-paper);
+  background: rgba(215, 181, 107, 0.12);
+  transform: translateY(-1px);
+}
+
+.page-frame {
+  flex: 1;
+}
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem;
+  color: var(--color-muted);
+  border-top: 1px solid rgba(215, 181, 107, 0.12);
+  background: rgba(8, 11, 14, 0.84);
+}
+
+.site-footer strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-paper);
+}
+
+.site-footer p {
+  margin: 0;
+  max-width: 42rem;
+}
+
+@media (max-width: 900px) {
+  .site-header,
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-nav {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

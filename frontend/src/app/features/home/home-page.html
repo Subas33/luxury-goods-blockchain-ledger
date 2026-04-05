@@ -1,0 +1,156 @@
+<section class="hero">
+  <div class="hero__copy">
+    <p class="section-kicker">Curated luxury commerce</p>
+    <h1>Sell the object, prove the story, and surface provenance as part of the buying experience.</h1>
+    <p class="hero__lede">
+      A premium marketplace where every listing is verified on the blockchain—ensuring transparent ownership history, trusted inspections, and a secure audit trail you can rely on.
+    </p>
+
+    <div class="hero__actions">
+      <button class="button button--primary" type="button" (click)="seedShowcase()" [disabled]="seedingShowcase()">
+        {{ seedingShowcase() ? 'Seeding inventory...' : 'Load Showcase Inventory' }}
+      </button>
+      <a class="button button--ghost" href="#operations">Register New Asset</a>
+    </div>
+  </div>
+
+  <div class="hero__panel">
+    <div class="hero__orb"></div>
+    <p class="hero__panel-label">Trust stack</p>
+    <ul class="hero__stack">
+      <li><strong>Fabric Ledger</strong><span>Immutable ownership and inspection anchors</span></li>
+      <li><strong>Spring Middleware</strong><span>Validation, orchestration, and hashing workflow</span></li>
+      <li><strong>Mongo Archive</strong><span>Full inspection dossiers for premium service teams</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="stats-band">
+  @for (stat of stats(); track stat.label) {
+    <article class="stat-card">
+      <strong>{{ stat.value }}</strong>
+      <span>{{ stat.label }}</span>
+    </article>
+  }
+</section>
+
+<section id="catalog" class="catalog-shell">
+  <div class="section-heading">
+    <div>
+      <p class="section-kicker">Collection view</p>
+      <h2>Luxury inventory with provenance surfaced alongside desirability.</h2>
+    </div>
+    <div class="catalog-controls">
+      <input
+        #searchInput
+        type="search"
+        placeholder="Search by brand, asset ID, owner, or type"
+        (input)="setSearch(searchInput.value)"
+      />
+    </div>
+  </div>
+
+  <div class="filter-row">
+    @for (type of typeFilters(); track type) {
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="activeType() === type"
+        (click)="selectType(type)"
+      >
+        {{ type }}
+      </button>
+    }
+  </div>
+
+  @if (actionMessage()) {
+    <p class="action-banner">{{ actionMessage() }}</p>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <h3>Catalog unavailable</h3>
+      <p>{{ error() }}</p>
+      <button class="button button--primary" type="button" (click)="loadAssets()">Retry</button>
+    </div>
+  } @else if (loading()) {
+    <div class="empty-state">
+      <h3>Loading collection</h3>
+      <p>Pulling assets from the middleware and their latest attestation summaries.</p>
+    </div>
+  } @else if (!filteredAssets().length) {
+    <div class="empty-state">
+      <h3>No assets match the current view</h3>
+      <p>Load the showcase inventory or register a new luxury asset to populate the storefront.</p>
+    </div>
+  } @else {
+    <div class="asset-grid">
+      @for (asset of filteredAssets(); track trackByAssetId($index, asset)) {
+        <app-asset-card [asset]="asset" />
+      }
+    </div>
+  }
+</section>
+
+<section id="operations" class="operations-grid">
+  <article class="operation-card operation-card--form">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Operations suite</p>
+        <h2>Mint new catalog entries directly from the UI.</h2>
+      </div>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="submitRegister()" class="register-form">
+      <label>
+        <span>Asset ID</span>
+        <input formControlName="assetId" placeholder="LG-ROLEX-004" />
+      </label>
+
+      <label>
+        <span>Type</span>
+        <select formControlName="type">
+          <option value="watch">Watch</option>
+          <option value="handbag">Handbag</option>
+          <option value="jewelry">Jewelry</option>
+          <option value="luggage">Luggage</option>
+          <option value="apparel">Apparel</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Brand</span>
+        <input formControlName="brand" placeholder="Rolex" />
+      </label>
+
+      <label>
+        <span>Owner</span>
+        <input formControlName="owner" placeholder="Maison Aurelia" />
+      </label>
+
+      <button class="button button--primary" type="submit" [disabled]="registering()">
+        {{ registering() ? 'Registering...' : 'Register Asset on Fabric' }}
+      </button>
+    </form>
+  </article>
+
+  <article id="trust" class="operation-card operation-card--story">
+    <p class="section-kicker">Why this works in demo</p>
+    <h2>The UI makes blockchain legible instead of abstract.</h2>
+
+    <ul class="trust-list">
+      <li>
+        <strong>Storefront trust signal</strong>
+        <span>Shoppers can open a dossier and see when custody moved or inspections were anchored.</span>
+      </li>
+      <li>
+        <strong>Service-team continuity</strong>
+        <span>Operations can add inspections from the same interface without leaving the commerce workflow.</span>
+      </li>
+      <li>
+        <strong>Clean separation of concerns</strong>
+        <span>Mongo keeps rich reports off-chain, while Fabric stores hashes and provenance milestones.</span>
+      </li>
+    </ul>
+  </article>
+</section>
