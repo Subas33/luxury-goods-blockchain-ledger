@@ -13,12 +13,11 @@ A blockchain-based asset provenance tracking, combining immutable on-chain state
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
 - [Component Documentation](#component-documentation)
-- [Project Structure](#project-structure)
 - [Setup & Deployment](#setup--deployment)
 - [REST API Reference](#rest-api-reference)
 - [Demo Workflows](#demo-workflows)
 - [Design Patterns & Concepts](#design-patterns--concepts)
-- [Limitations & Future Work](#limitations--future-work)
+- [Limitations](#limitations)
 
 ---
 
@@ -37,7 +36,7 @@ A blockchain-based asset provenance tracking, combining immutable on-chain state
 
 ## 1. Clone and enter directory
 ```bash
-git clone <repo-url>
+git clone https://github.com/Subas33/luxury-goods-blockchain-ledger.git
 cd LuxuryGoodsBlockchain
 ```
 ## 2. Start dependencies (MongoDB)
@@ -71,84 +70,12 @@ For detailed setup instructions, see [Setup & Deployment](#setup--deployment).
 
 ## System Architecture
 
-### Component Overview
+![alt text](docs/images/ArchitectureOverall.jpg)
 
-```
-┌─────────────────────────────┐
-│  Angular Frontend (4200)    │  
-│  - Asset Catalog View       │
-│  - Registration Form         │
-│  - Ownership Transfers       │
-│  - Inspection Management     │
-└────────────┬────────────────┘
-             │ HTTP REST
-             ↓
-┌─────────────────────────────┐
-│  Spring Boot Middleware     │  (8080)
-│  - REST API Endpoints       │
-│  - Business Logic           │
-│  - Hash Generation (SHA256) │
-│  - Fabric Gateway Client    │
-└────────┬────────────┬───────┘
-         │            │
-         ↓            ↓
-    ┌─────────┐  ┌──────────────────┐
-    │ MongoDB │  │ Hyperledger      │
-    │ - Assets│  │ Fabric Network   │
-    │ - Insp  │  │ - Ledger         │
-    └─────────┘  │ - Peers          │
-                 │ - Orderer        │
-                 │ - Chaincode      │
-                 └──────────────────┘
-```
-
-### Data Flow
-
-**Typical Transaction:**
-```
-User submits form
-    ↓
-Angular validates locally
-    ↓
-HTTP POST to middleware API
-    ↓
-Middleware validates & processes
-    ↓
-│ MongoDB  ← Upserted (projection)
-│ Fabric   ← Transaction submitted
-↓
-Consensus achieved (3+ peer endorsement, orderer commit)
-    ↓
-Ledger updated on all peers
-    ↓
-Response sent back to frontend
-    ↓
-UI updates with confirmation
-```
-
-### Architectural Flow Diagram
-
-```
-Browser                  Frontend              Middleware          MongoDB
-  │                        │                       │                  │
-  ├─ Load Catalog ────────→│                       │                  │
-  │                        ├─ GET /assets ───────→│                  │
-  │                        │                       ├─ Query ─────────→│
-  │                        │                {filtered} ←───────────┤
-  │                        ←─ AssetSummary[] ────────┤
-  │  ←─ Catalog ──────────┤                       │                  │
-  │                        │                       │                  │
-  ├─ Register Asset ──────→│                       │                  │
-  │  {assetId, type...}    ├─ POST /assets ─────→│                  │
-  │                        │                       ├─ Submit ────→ Fabric
-  │                        │                    (Consensus)          │
-  │                        │                       ↓                  │
-  │                        │                    ← Response            │
-  │                        │                       ├─ Upsert ────────→│
-  │                        │                       ← Done             │
-  │                        ← Success ──────┤
-  │  ←─ Asset Confirmed ──┤                       │                  │
-```
+### 🏗️ **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAMS.md)**
+- System overview with all components
+- Sequence diagrams for key workflows
+- State transition machines
 
 ---
 
@@ -226,102 +153,6 @@ Each layer of the application has comprehensive documentation:
 - Home Page - Asset catalog with search/filters
 - Asset Detail Page - Ownership, history, inspections
 - Asset Card - Reusable presentation component
-
-### 🏗️ **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAMS.md)**
-- System overview with all components
-- Sequence diagrams for key workflows
-- State transition machines
-- Class diagrams with design patterns
-- Error handling flows
-
----
-
-## Project Structure
-
-```
-LuxuryGoodsBlockchain/
-├── docs/                                    # Component documentation
-│   ├── CHAINCODE_ARCHITECTURE.md           # Smart contract design
-│   ├── MIDDLEWARE_ARCHITECTURE.md          # Spring Boot design
-│   ├── FRONTEND_ARCHITECTURE.md            # Angular design
-│   └── ARCHITECTURE_DIAGRAMS.md            # Mermaid diagrams
-│
-├── chaincode/                              # Java Chaincode (Fabric)
-│   ├── pom.xml
-│   └── src/main/java/com/luxurygoods/blockchain/chaincode/
-│       ├── AssetContract.java              # Main contract
-│       ├── AssetState.java                 # Data model
-│       ├── AssetEvent.java                 # Event definitions
-│       └── AssetHistoryRecord.java         # History tracking
-│
-├── middleware/                             # Spring Boot API
-│   ├── pom.xml
-│   └── src/main/java/com/luxurygoods/blockchain/middleware/
-│       ├── controller/                     # REST endpoints
-│       │   └── AssetController.java
-│       ├── service/                        # Business logic
-│       │   ├── AssetService.java
-│       │   ├── FabricLedgerService.java
-│       │   └── InspectionHashService.java
-│       ├── config/                         # Configuration
-│       │   ├── FabricGatewayConfig.java
-│       │   ├── FabricGatewayProperties.java
-│       │   └── WebConfig.java
-│       ├── repository/                     # Data access
-│       │   ├── AssetRepository.java
-│       │   └── InspectionReportRepository.java
-│       ├── dto/                            # Request/Response DTOs
-│       │   ├── request/
-│       │   └── response/
-│       ├── model/                          # MongoDB documents
-│       │   ├── AssetDocument.java
-│       │   └── InspectionReportDocument.java
-│       ├── exception/                      # Custom exceptions
-│       │   ├── DuplicateAssetException.java
-│       │   ├── FabricClientException.java
-│       │   └── GlobalExceptionHandler.java
-│       └── LuxuryGoodsBlockchainApplication.java
-│
-├── frontend/                               # Angular Application
-│   ├── package.json
-│   ├── angular.json
-│   ├── tsconfig.json
-│   └── src/app/
-│       ├── app.ts                          # Root component
-│       ├── app.config.ts                   # Configuration
-│       ├── app.routes.ts                   # Route definitions
-│       ├── core/
-│       │   ├── models/
-│       │   │   └── luxury-goods.models.ts  # TypeScript interfaces
-│       │   ├── services/
-│       │   │   └── luxury-goods-api.service.ts
-│       │   ├── data/
-│       │   │   └── showcase-assets.ts      # Demo data
-│       │   └── utils/
-│       │       └── luxury-asset.presenter.ts
-│       ├── features/
-│       │   ├── home/
-│       │   │   └── home-page.*             # Catalog view
-│       │   └── asset-detail/
-│       │       └── asset-detail-page.*     # Asset details
-│       └── shared/
-│           └── components/
-│               └── asset-card/
-│                   └── asset-card.*        # Reusable card
-│
-├── scripts/                                # Deployment & setup
-│   ├── start-fabric.sh                     # Start Fabric network
-│   ├── deploy-chaincode.sh                 # Deploy chaincode
-│   ├── run-middleware.sh                   # Start Spring Boot
-│   ├── run-frontend.sh                     # Start Angular
-│   └── stop-fabric.sh                      # Stop Fabric
-│
-├── pom.xml                                 # Root Maven aggregator
-├── mvnw & mvnw.cmd                         # Maven wrappers
-├── docker-compose.yml                      # MongoDB + utilities
-├── .gitignore                              # Git exclusions
-└── README.md                               # This file
-```
 
 ---
 
