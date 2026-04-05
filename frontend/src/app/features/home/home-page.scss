@@ -33,6 +33,7 @@
 }
 
 .hero__copy {
+  font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
   padding: clamp(1.7rem, 4vw, 3.5rem);
   background:
     radial-gradient(circle at top right, rgba(215, 181, 107, 0.28), transparent 34%),

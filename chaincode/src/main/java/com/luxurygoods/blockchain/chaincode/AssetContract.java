@@ -28,9 +28,9 @@ import com.owlike.genson.Genson;
                         name = "Apache-2.0",
                         url = "https://www.apache.org/licenses/LICENSE-2.0"),
                 contact = @Contact(
-                        email = "engineering@example.com",
+                        email = "subash@example.com",
                         name = "Luxury Goods Blockchain Team",
-                        url = "https://example.com")))
+                        url = "https://luxuryyGoods.com")))
 @Default
 public final class AssetContract implements ContractInterface {
 
